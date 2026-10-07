@@ -1,0 +1,11 @@
+{
+  "name": "among-us-reel-server",
+  "version": "3.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}

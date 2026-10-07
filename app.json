@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Among Us IRL",
+    "slug": "among-us-reel-v3",
+    "version": "3.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "plugins": [
+      "expo-camera",
+      "expo-audio"
+    ],
+    "android": {
+      "package": "com.lionel.amongusirl",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0fcde445-f7c4-4fde-92d3-3e1a466b4baa"
+      }
+    }
+  }
+}
