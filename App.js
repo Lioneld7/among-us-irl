@@ -156,10 +156,12 @@ const [connecting,setConnecting]=useState(false),[justDied,setJustDied]=useState
    }
 
    setConnecting(true);
+   console.log('WS: tentative de connexion vers', url);
    const sock=new WebSocket(url);
    ws.current=sock;
 
    sock.onopen=()=>{
+     console.log('WS: connexion ouverte');
      sock.send(JSON.stringify({type:'JOIN',name:nm,qr:qrId,room}));
    };
 
@@ -211,8 +213,11 @@ const [connecting,setConnecting]=useState(false),[justDied,setJustDied]=useState
      }
    };
 
-   sock.onerror=()=>{setConnecting(false)};
+   sock.onerror=()=>{
+   console.log('WS: erreur de connexion');
+   setConnecting(false)};
    sock.onclose=()=>{
+   console.log('WS: connexion fermée');
      setConnecting(false);
      if(session.current.room&&session.current.name&&session.current.qr&&!reconnectTimer.current){
        reconnectTimer.current=setTimeout(()=>{
@@ -357,10 +362,7 @@ const [connecting,setConnecting]=useState(false),[justDied,setJustDied]=useState
 
    sock.onerror=()=>{
      setConnecting(false);
-     Alert.alert(
-       'Connexion impossible',
-       'Vérifie que le serveur est lancé sur le PC et que le téléphone est sur le même Wi-Fi.'
-     );
+     setMessage('Erreur de connexion au serveur.');
    };
 
    sock.onclose=()=>{

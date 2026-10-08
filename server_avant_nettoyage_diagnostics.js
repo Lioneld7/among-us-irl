@@ -1,4 +1,4 @@
-﻿const http = require('http');
+const http = require('http');
 const os = require('os');
 const { WebSocketServer } = require('ws');
 
@@ -7,17 +7,17 @@ const rooms = new Map();
 
 const HQ = [
   'Apporter une chaussette au QG',
-  'Composer un slam de 3 vers avec des rimes sur 3 prÃ©noms de tes potes et le chanter',
-  'Lancer 3 dÃ©s et obtenir 10 ou 11, recommencer si nÃ©cessaire',
+  'Composer un slam de 3 vers avec des rimes sur 3 prénoms de tes potes et le chanter',
+  'Lancer 3 dés et obtenir 10 ou 11, recommencer si nécessaire',
   'Faire un flip de bouteille qui retombe debout',
   'Raconter la blague la plus marrante possible',
   'Gagner une manche de Pierre/Feuille/Ciseaux',
-  'CrÃ©er une bulle de savon et la souffler Ã  travers un cerceau',
-  'Envoyer un sachet de thÃ© sur la visiÃ¨re avec un mouvement de tÃªte',
-  'Lancer une balle dans une poubelle accrochÃ©e dans le dos',
-  'Faire rouler une balle de ping-pong dans un verre posÃ© au sol',
-  'Construire un chÃ¢teau de cartes',
-  'DÃ©placer 5 papiers dâ€™un verre Ã  un autre avec une paille',
+  'Créer une bulle de savon et la souffler à travers un cerceau',
+  'Envoyer un sachet de thé sur la visière avec un mouvement de tête',
+  'Lancer une balle dans une poubelle accrochée dans le dos',
+  'Faire rouler une balle de ping-pong dans un verre posé au sol',
+  'Construire un château de cartes',
+  'Déplacer 5 papiers d’un verre à un autre avec une paille',
   'Faire deviner 3 mots uniquement en les mimant',
   'Faire deviner 3 animaux uniquement en les bruitant',
   'Empiler 5 jetons sur le dos de la main puis tous les rattraper'
@@ -62,8 +62,8 @@ function publicPlayers(room) {
 
 /*
   IMPORTANT :
-  Les tÃ¢ches et rÃ©ussites des imposteurs existent bien,
-  mais elles ne sont jamais comptÃ©es pour la victoire des Crewmates.
+  Les tâches et réussites des imposteurs existent bien,
+  mais elles ne sont jamais comptées pour la victoire des Crewmates.
 */
 function taskCount(room) {
   return room.players
@@ -97,8 +97,8 @@ function checkWin(room) {
   }
 
   /*
-    Seules les tÃ¢ches des Crewmates comptent ici.
-    Les tÃ¢ches des imposteurs sont donc totalement ignorÃ©es
+    Seules les tâches des Crewmates comptent ici.
+    Les tâches des imposteurs sont donc totalement ignorées
     pour cette condition de victoire.
   */
   if (doneCount(room) >= taskCount(room)) {
@@ -194,15 +194,22 @@ function startGame(room) {
       : 'crewmate';
 
     /*
-      TOUS les joueurs reÃ§oivent maintenant de vraies tÃ¢ches QR.
+      TOUS les joueurs reçoivent maintenant de vraies tâches QR.
       Les imposteurs aussi.
     */
-    // TOUS les joueurs reÃ§oivent de vraies tÃ¢ches QR,
-    // y compris les imposteurs. Les tÃ¢ches des imposteurs
+    // TOUS les joueurs reçoivent de vraies tâches QR,
+    // y compris les imposteurs. Les tâches des imposteurs
     // ne comptent pas dans la victoire des Crewmates.
     p.tasks = shuffle(pool).slice(
       0,
       Math.min(room.tasksPerCrewmate, 15)
+    );
+
+    console.log(
+      'TACHES ASSIGNEES:',
+      p.name,
+      '| role =', p.role,
+      '| tasks =', p.tasks.join(',')
     );
   }
 
@@ -286,7 +293,7 @@ const server = http.createServer((req, res) => {
     'Content-Type': 'text/plain'
   });
 
-  res.end('Among Us RÃ©el server OK');
+  res.end('Among Us Réel server OK');
 });
 
 const wss = new WebSocketServer({
@@ -294,8 +301,10 @@ const wss = new WebSocketServer({
 });
 
 server.on('upgrade', (req, socket, head) => {
+  console.log('UPGRADE WEBSOCKET RECU');
 });
 wss.on('connection', ws => {
+  console.log('WEBSOCKET CONNECTE');
   
 ws.on('message', raw => {
     let m;
@@ -390,9 +399,9 @@ ws.on('message', raw => {
         });
       }
 
-      // Reconnexion d'un joueur dÃ©jÃ  prÃ©sent dans la partie.
-      // Cela permet Ã  un tÃ©lÃ©phone dont la WebSocket s'est interrompue
-      // de reprendre sa place mÃªme aprÃ¨s le lancement de la partie.
+      // Reconnexion d'un joueur déjà présent dans la partie.
+      // Cela permet à un téléphone dont la WebSocket s'est interrompue
+      // de reprendre sa place même après le lancement de la partie.
       const reconnectQr = String(m.qr || '')
         .trim()
         .slice(0, 64);
@@ -423,14 +432,14 @@ ws.on('message', raw => {
 
         return send(ws, {
           type: 'ERROR',
-          message: 'La partie a dÃ©jÃ  commencÃ©'
+          message: 'La partie a déjà commencé'
         });
       }
 
       if (r.players.length >= r.count) {
         return send(ws, {
           type: 'ERROR',
-          message: 'La partie est complÃ¨te'
+          message: 'La partie est complète'
         });
       }
 
@@ -459,7 +468,7 @@ ws.on('message', raw => {
       if (r.players.some(p => p.qr === qr)) {
         return send(ws, {
           type: 'ERROR',
-          message: 'Ce QR joueur est dÃ©jÃ  utilisÃ© dans cette partie'
+          message: 'Ce QR joueur est déjà utilisé dans cette partie'
         });
       }
 
@@ -470,7 +479,7 @@ ws.on('message', raw => {
       ) {
         return send(ws, {
           type: 'ERROR',
-          message: 'Ce nom est dÃ©jÃ  utilisÃ©'
+          message: 'Ce nom est déjà utilisé'
         });
       }
 
@@ -523,7 +532,7 @@ ws.on('message', raw => {
         if (me.id !== r.hostId) {
           return send(ws, {
             type: 'ERROR',
-            message: 'Seul le crÃ©ateur peut lancer la partie'
+            message: 'Seul le créateur peut lancer la partie'
           });
         }
 
@@ -538,8 +547,8 @@ ws.on('message', raw => {
 
       /*
         Mini-jeu :
-        CREWMATE ET IMPOSTEUR peuvent rÃ©ussir leurs tÃ¢ches.
-        Mais seules les tÃ¢ches Crewmates comptent dans checkWin().
+        CREWMATE ET IMPOSTEUR peuvent réussir leurs tâches.
+        Mais seules les tâches Crewmates comptent dans checkWin().
       */
       } else if (
         m.type === 'FINISH_MINI' &&
@@ -569,7 +578,7 @@ ws.on('message', raw => {
         }
 
       /*
-        Ã‰preuve QG :
+        Épreuve QG :
         CREWMATE ET IMPOSTEUR peuvent en avoir une.
       */
       } else if (
@@ -593,7 +602,7 @@ ws.on('message', raw => {
       /*
         Validation QG :
         CREWMATE ET IMPOSTEUR peuvent valider.
-        Les tÃ¢ches de l'imposteur ne dÃ©clenchent jamais
+        Les tâches de l'imposteur ne déclenchent jamais
         la victoire des Crewmates.
       */
       } else if (
@@ -624,7 +633,7 @@ ws.on('message', raw => {
         }
 
       /*
-        Ã‰limination rÃ©servÃ©e aux imposteurs.
+        Élimination réservée aux imposteurs.
         Version historique : cible par ID.
       */
       } else if (
@@ -657,8 +666,8 @@ ws.on('message', raw => {
         }
 
       /*
-        Nouvelle Ã©limination par QR personnel.
-        Le serveur retrouve le joueur grÃ¢ce Ã  son QR.
+        Nouvelle élimination par QR personnel.
+        Le serveur retrouve le joueur grâce à son QR.
       */
       } else if (
         m.type === 'KILL_QR' &&
@@ -699,16 +708,16 @@ ws.on('message', raw => {
         } else if (target.id === me.id) {
           send(ws, {
             type: 'ERROR',
-            message: 'Tu ne peux pas tâ€™Ã©liminer toi-mÃªme'
+            message: 'Tu ne peux pas t’éliminer toi-même'
           });
         }
 
       /*
         BOMBE :
         - seul un imposteur vivant peut l'activer ;
-        - tous les joueurs reÃ§oivent l'Ã©tat de la bombe via snapshot ;
-        - les Crewmates peuvent la dÃ©sactiver en scannant son QR ;
-        - Ã  0 seconde, les imposteurs gagnent.
+        - tous les joueurs reçoivent l'état de la bombe via snapshot ;
+        - les Crewmates peuvent la désactiver en scannant son QR ;
+        - à 0 seconde, les imposteurs gagnent.
       */
       } else if (
         m.type === 'BOMB_ACTIVATE' &&
@@ -902,7 +911,7 @@ server.listen(PORT, '0.0.0.0', () => {
   }
 
   console.log(
-    `Among Us RÃ©el server listening on port ${PORT}`
+    `Among Us Réel server listening on port ${PORT}`
   );
 
   console.log(
@@ -912,4 +921,3 @@ server.listen(PORT, '0.0.0.0', () => {
     }`
   );
 });
-

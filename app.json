@@ -7,10 +7,13 @@
     "userInterfaceStyle": "dark",
     "plugins": [
       "expo-camera",
-      "expo-audio"
+      "expo-audio",
+      "expo-asset",
+      "./plugins/withCleartextWebSocket"
     ],
     "android": {
       "package": "com.lionel.amongusirl",
+      "usesCleartextTraffic": true,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
