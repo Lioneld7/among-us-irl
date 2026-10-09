@@ -775,6 +775,14 @@ ws.on('message', raw => {
         r.status === 'playing' &&
         me.alive
       ) {
+        // Une réunion ne peut pas interrompre une bombe active :
+        // les joueurs doivent pouvoir scanner le QR pour la désamorcer.
+        if (r.bomb?.active) {
+          return send(ws, {
+            type: 'ERROR',
+            message: 'Impossible de déclencher une réunion tant que la bombe est active.'
+          });
+        }
 
         r.meeting = {
           reportedBy: me.name,

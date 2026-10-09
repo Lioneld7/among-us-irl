@@ -26,7 +26,7 @@ const HQ=[
 
 const MINI=['Mémoire éclair','Réaction','Calcul express','Suite de couleurs','Compter les intrus','Code secret','Cible mobile','Ordre croissant','Pair ou impair','Trouver le symbole','Mot à compléter','Pastilles piégées','Compte à rebours','Attrape le bon symbole','Séquence finale'];
 
-const DEFAULT_SERVER='ws://192.168.1.82:3000';
+const DEFAULT_SERVER='wss://among-us-irl-1tdn.onrender.com';
 
 export default function App(){
  const [server,setServer]=useState(DEFAULT_SERVER),[name,setName]=useState(''),[code,setCode]=useState(''),[screen,setScreen]=useState('home');
@@ -1553,10 +1553,33 @@ if(!identityLoaded)
          </Pressable>
 
          <Pressable
-           style={s.alert}
-           onPress={()=>{ send({type:'REPORT'}); }}
+           style={[s.alert, state.bomb?.active && {opacity:0.45}]}
+           disabled={!!state.bomb?.active}
+           onPress={()=>{
+             if(state.bomb?.active){
+               Alert.alert(
+                 'Bombe active',
+                 'Impossible de déclencher une réunion tant que la bombe n’est pas désamorcée.'
+               );
+               return;
+             }
+             Alert.alert(
+               'Réunion d’urgence',
+               'Veux-tu vraiment déclencher une réunion d’urgence ?',
+               [
+                 {text:'Annuler', style:'cancel'},
+                 {text:'Confirmer', onPress:()=>{
+                   if(!state.bomb?.active) send({type:'REPORT'});
+                 }}
+               ]
+             );
+           }}
          >
-           <Text style={s.alertT}>🚨 RÉUNION D’URGENCE</Text>
+           <Text style={s.alertT}>
+             {state.bomb?.active
+               ? '💣 RÉUNION IMPOSSIBLE PENDANT LA BOMBE'
+               : '🚨 RÉUNION D’URGENCE'}
+           </Text>
          </Pressable>
 
          <View style={[s.taskSection,{marginTop:28}]}>
